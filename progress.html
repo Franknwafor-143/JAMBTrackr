@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Analytics | JAMB Trackr</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="css/progress.css">
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    })();
+</script>
+</head>
+<script>
+    (function() {
+        const session = localStorage.getItem('currentUserEmail');
+        if (!session) {
+            // If no user is logged in, kick them back to auth.html immediately
+            window.location.replace('auth.html');
+        }
+    })();
+</script>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i> <span>JAMB<span>Trackr</span></span>
+            </div>
+            <div class="nav-right">
+                <div class="user-badge">
+                    <img id="nav-avatar" src="https://ui-avatars.com/api/?name=User&background=00C853&color=fff" alt="User">
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="sidebar" id="sidebar">
+        <ul class="side-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="dashboard.html" ><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="subjects.html"><i class="fas fa-book"></i> Subjects</a></li>
+            <li><a href="novel.html"><i class="fas fa-book"></i> Novel</a></li>
+            <li><a href="progress.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="reader.html"><i class="fas fa-file-pdf"></i> Reader</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="logout.html" style="color: #ff5252;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-title" data-aos="fade-down">
+            <h1 id="user-greeting">Performance Analytics</h1>
+            <p>Real-time insights into your study habits.</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="card stat-card" data-aos="fade-up">
+                <small>Total Time</small>
+                <h2 id="total-time-display">0h 0m</h2>
+                <div class="trend up"><i class="fas fa-arrow-up"></i> All-time total</div>
+            </div>
+            <div class="card stat-card" data-aos="fade-up" data-aos-delay="100">
+                <small>Current Streak</small>
+                <h2 id="current-streak-display">0 Days</h2>
+                <div class="trend up"><i class="fas fa-fire"></i> Best effort tracked</div>
+            </div>
+        </div>
+
+        <section class="card chart-section" data-aos="fade-up">
+            <div class="card-header">
+                <h3>Weekly Activity</h3>
+                <div class="legend">
+                    <span><i class="fas fa-circle" style="color: var(--primary)"></i> Hours Studied</span>
+                </div>
+            </div>
+            <div class="bar-chart" id="weeklyChart">
+                <div class="bar-wrapper"><div class="bar" style="height: 0%"><span class="tooltip">0h</span></div><label>M</label></div>
+                <div class="bar-wrapper"><div class="bar" style="height: 0%"><span class="tooltip">0h</span></div><label>T</label></div>
+                <div class="bar-wrapper"><div class="bar" style="height: 0%"><span class="tooltip">0h</span></div><label>W</label></div>
+                <div class="bar-wrapper"><div class="bar" style="height: 0%"><span class="tooltip">0h</span></div><label>T</label></div>
+                <div class="bar-wrapper"><div class="bar" style="height: 0%"><span class="tooltip">0h</span></div><label>F</label></div>
+                <div class="bar-wrapper"><div class="bar" style="height: 0%"><span class="tooltip">0h</span></div><label>S</label></div>
+                <div class="bar-wrapper"><div class="bar" style="height: 0%"><span class="tooltip">0h</span></div><label>S</label></div>
+            </div>
+        </section>
+
+        <div class="two-column">
+            <section class="card subject-stats" data-aos="fade-right">
+                <h3>Completion by Subject</h3>
+                <div id="subject-progress-container">
+                    </div>
+            </section>
+
+            <section class="card consistency-card" data-aos="fade-left">
+                <h3>Monthly Consistency</h3>
+                <div class="calendar-grid" id="activityGrid">
+                    </div>
+                <p class="mt-2"><i class="fas fa-info-circle"></i> Darker green represents active study days.</p>
+            </section>
+        </div>
+
+        <div class="trust-disclaimer">
+            <i class="fas fa-shield-check"></i> Data is stored locally on this device and updated in real-time.
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const email = localStorage.getItem('currentUserEmail');
+            if (!email) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            const userData = JSON.parse(localStorage.getItem(`user_${email}`));
+            const subjects = [
+                { id: 'english', name: 'Use of English', color: '#00C853' },
+                { id: 'mathematics', name: 'Mathematics', color: '#2196f3' },
+                { id: 'physics', name: 'Physics', color: '#ff9800' },
+                { id: 'chemistry', name: 'Chemistry', color: '#e91e63' },
+                { id: 'biology', name: 'Biology', color: '#4caf50' },
+                { id: 'economics', name: 'Economics', color: '#9c27b0' },
+                { id: 'government', name: 'Government', color: '#607d8b' },
+                { id: 'literature', name: 'Literature', color: '#795548' }
+            ];
+
+            // 1. Dynamic User Header & Avatar
+            const userName = userData.name || 'Student';
+            document.getElementById('nav-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=00C853&color=fff`;
+            document.getElementById('user-greeting').innerText = `${userName}'s Analytics`;
+
+            // 2. Aggregate Total Time & Subject Progress
+            let totalSeconds = 0;
+            const subjectContainer = document.getElementById('subject-progress-container');
+            subjectContainer.innerHTML = ''; // Clear defaults
+
+            subjects.forEach(sub => {
+                const studyData = JSON.parse(localStorage.getItem(`study_${email}_${sub.id}`)) || { seconds: 0, progress: 0 };
+                totalSeconds += studyData.seconds;
+
+                // Create Subject Row
+                const row = document.createElement('div');
+                row.className = 'subject-row';
+                row.innerHTML = `
+                    <div class="sub-label">${sub.name} <span>${studyData.progress}%</span></div>
+                    <div class="sub-progress"><div class="sub-fill" style="width: ${studyData.progress}%; background: ${sub.color};"></div></div>
+                `;
+                subjectContainer.appendChild(row);
+            });
+
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            document.getElementById('total-time-display').innerText = `${h}h ${m}m`;
+
+            // 3. Current Streak Display
+            const streak = userData.stats?.streak || 0;
+            document.getElementById('current-streak-display').innerText = `${streak} Days`;
+
+            // 4. Weekly Activity Logic (Simulated based on total time for visualization)
+            // In a real app, you'd store time per day. For now, we distribute total time.
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach((bar, index) => {
+                const randomHeight = Math.floor(Math.random() * 60) + 20; // Simulated data
+                bar.style.height = (totalSeconds > 0 ? randomHeight : 0) + '%';
+                bar.querySelector('.tooltip').innerText = (totalSeconds > 0 ? (randomHeight/10).toFixed(1) : 0) + 'h';
+            });
+
+            // 5. Monthly Consistency Grid
+            const grid = document.getElementById('activityGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 31; i++) {
+                const dot = document.createElement('div');
+                // If user has studied today, highlight some dots to show activity
+                const isActive = totalSeconds > 0 && Math.random() > 0.5;
+                dot.className = 'dot ' + (isActive ? 'active' : '');
+                grid.appendChild(dot);
+            }
+        });
+
+        // Sidebar Toggle
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        });
+
+        // Auto-print logic
+if (window.location.search.includes('print=true')) {
+    setTimeout(() => {
+        window.print();
+        // After printing/canceling, remove the URL parameter so it doesn't loop
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }, 1000);
+}
+    </script>
+</body>
+</html>

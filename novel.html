@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Lekki Headmaster | Study Session</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="css/novel.css">
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    })();
+</script>
+    <style>
+        /* Essential styles for the formal popup */
+        .formal-modal {
+            display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%;
+            text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.4s ease;
+        }
+        .modal-content h2 { color: #1a1a1a; margin-bottom: 15px; font-weight: 700; }
+        .modal-content p { color: #555; line-height: 1.6; margin-bottom: 25px; }
+        .modal-btn { 
+            background: #00C853; color: white; border: none; padding: 12px 30px; 
+            border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Mobile Fix for Progress Panel: Overriding the 'display: none' in external CSS */
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                flex-direction: column;
+                height: auto;
+                overflow-y: auto;
+            }
+            body { overflow-y: auto; }
+            .pdf-container { height: 500px; flex: none; }
+            .progress-panel { 
+                display: flex !important; 
+                width: 100%; 
+                border-left: none; 
+                border-top: 1px solid #f0f0f0;
+            }
+        }
+    </style>
+</head>
+<script>
+    (function() {
+        const session = localStorage.getItem('currentUserEmail');
+        if (!session) {
+            // If no user is logged in, kick them back to auth.html immediately
+            window.location.replace('auth.html');
+        }
+    })();
+</script>
+<body>
+
+    <div id="instructionModal" class="formal-modal" style="display: flex;">
+        <div class="modal-content">
+            <i class="fas fa-info-circle" style="font-size: 3rem; color: #00C853; margin-bottom: 15px;"></i>
+            <h2>Study Protocol</h2>
+            <p>Welcome to your study session for <strong>"The Lekki Headmaster"</strong>. To ensure an accurate tracking of your academic progress, please select the checkbox corresponding to your current chapter.</p>
+            <button class="modal-btn" onclick="closeModal()">Proceed to Study</button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i></a>
+                <div class="novel-title">
+                    <h2>The Lekki Headmaster</h2>
+                    <span class="novel-badge">Novel Study</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="timer-card">
+                    <i class="fas fa-stopwatch"></i>
+                    <span id="reading-timer">00:00:00</span>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content-wrapper">
+        <section class="pdf-container">
+            <div class="viewer-tools">
+                <div class="tool-group">
+                    <button class="tool-btn"><i class="fas fa-search-plus"></i></button>
+                    <button class="tool-btn"><i class="fas fa-search-minus"></i></button>
+                </div>
+                <div class="save-status" id="saveStatus">
+                    <i class="fas fa-cloud-upload-alt"></i> Auto-saving...
+                </div>
+            </div>
+            <div class="pdf-frame">
+                <iframe src="pdfs/lekki_headmaster.pdf" width="100%" height="100%"></iframe>
+            </div>
+        </section>
+
+        <aside class="progress-panel">
+            <div class="stats-card">
+                <div class="progress-header">
+                    <h3>Reading Progress</h3>
+                    <span id="progress-text">0%</span>
+                </div>
+                <div class="main-bar">
+                    <div class="fill-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
+                <div class="meta-stats">
+                    <div class="m-box">
+                        <small>Time Spent</small>
+                        <p id="totalReadingTime">0.0h</p>
+                    </div>
+                    <div class="m-box">
+                        <small>Goal</small>
+                        <p>100%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-section">
+                <h3>Chapter Checklist</h3>
+                <div class="chapters-list">
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="0" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 1</span><span class="c-title">Dusk</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="1" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 2</span><span class="c-title">The Enticement</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="2" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 3</span><span class="c-title">Migration Tales</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="3" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 4</span><span class="c-title">A Case of Visa Denied</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="4" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 5</span><span class="c-title">Snake in the Roof</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="5" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 6</span><span class="c-title">Ade as Well as Jide</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="6" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 7</span><span class="c-title">Ritualists</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="7" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 8</span><span class="c-title">Missions Unaccomplished</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="8" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 9</span><span class="c-title">Laughing Waterfalls</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="9" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 10</span><span class="c-title">Passport Pains</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="10" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 11</span><span class="c-title">Point of No Return</span></div>
+                    </label>
+                    <label class="chapter-item">
+                        <input type="checkbox" class="chapter-cb" data-index="11" onchange="handleCheckboxChange(this)">
+                        <div class="chapter-info"><span class="c-num">Ch. 12</span><span class="c-title">…Dawn</span></div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="action-footer">
+                <button class="btn-primary" id="startBtn" onclick="toggleTimer()">Start Reading</button>
+                <p class="trust-footer">Data stored securely in browser <i class="fas fa-lock"></i></p>
+            </div>
+        </aside>
+    </main>
+
+    <div class="mobile-nav" id="mobileNav">
+        <ul class="mob-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="subjects.html"><i class="fas fa-book"></i> Subjects</a></li>
+            <li><a href="novel.html" class="active"><i class="fas fa-book"></i> Novel</a></li>
+            <li><a href="progress.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="logout.html" style="color: #ff5252;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init();
+
+        let seconds = 0;
+        let isRunning = false;
+        let timerId = null;
+        const currentUserEmail = localStorage.getItem('currentUserEmail') || 'guest';
+
+        window.onload = () => {
+            const savedChapters = JSON.parse(localStorage.getItem(`novel_ch_${currentUserEmail}`));
+            const savedTime = localStorage.getItem(`novel_time_${currentUserEmail}`);
+            
+            if (savedChapters) {
+                const checkboxes = document.querySelectorAll('.chapter-cb');
+                savedChapters.forEach((state, index) => {
+                    if(checkboxes[index]) checkboxes[index].checked = state;
+                });
+                updateProgressUI();
+            }
+
+            if (savedTime) {
+                seconds = parseInt(savedTime);
+                formatTimerDisplay();
+                updateTotalHours();
+            }
+        };
+
+        function closeModal() {
+            document.getElementById('instructionModal').style.display = 'none';
+        }
+
+        function handleCheckboxChange(current) {
+            const checkboxes = Array.from(document.querySelectorAll('.chapter-cb'));
+            const index = parseInt(current.dataset.index);
+
+            if (current.checked) {
+                for (let i = 0; i < index; i++) {
+                    if (!checkboxes[i].checked) {
+                        alert("Academic Protocol: Please complete the previous chapters sequentially.");
+                        current.checked = false;
+                        return;
+                    }
+                }
+                if (!isRunning) toggleTimer();
+            } else {
+                for (let i = index + 1; i < checkboxes.length; i++) {
+                    checkboxes[i].checked = false;
+                }
+            }
+            updateProgressUI();
+            saveData();
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('startBtn');
+            if(!isRunning) {
+                startTimer();
+            } else {
+                stopTimer();
+            }
+        }
+
+        function startTimer() {
+            if(!isRunning) {
+                isRunning = true;
+                timerId = setInterval(updateTimer, 1000);
+                const btn = document.getElementById('startBtn');
+                btn.innerText = "Pause Session";
+                btn.style.background = "#ff9800";
+            }
+        }
+
+        function stopTimer() {
+            isRunning = false;
+            clearInterval(timerId);
+            const btn = document.getElementById('startBtn');
+            if(btn) {
+                btn.innerText = "Resume Reading";
+                btn.style.background = "#00C853";
+            }
+            saveData();
+        }
+
+        function updateTimer() {
+            seconds++;
+            formatTimerDisplay();
+            if(seconds % 5 === 0) { 
+                saveData();
+                updateTotalHours();
+            }
+        }
+
+        function formatTimerDisplay() {
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('reading-timer').innerText = `${h}:${m}:${s}`;
+        }
+
+        function updateProgressUI() {
+            const checkboxes = document.querySelectorAll('.chapter-cb');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percentage = Math.round((checkedCount / checkboxes.length) * 100);
+            
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progress-text').innerText = percentage + '%';
+        }
+
+        function updateTotalHours() {
+            const hours = (seconds / 3600).toFixed(1);
+            document.getElementById('totalReadingTime').innerText = hours + 'h';
+        }
+
+        function saveData() {
+            const status = document.getElementById('saveStatus');
+            if(status) status.style.opacity = '1';
+            
+            const checkboxes = document.querySelectorAll('.chapter-cb');
+            const states = Array.from(checkboxes).map(cb => cb.checked);
+            
+            localStorage.setItem(`novel_ch_${currentUserEmail}`, JSON.stringify(states));
+            localStorage.setItem(`novel_time_${currentUserEmail}`, seconds);
+
+            setTimeout(() => { if(status) status.style.opacity = '0.4'; }, 800);
+        }
+
+        // AUTO-PAUSE LOGIC: Pauses when tab is hidden, or window loses focus
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && isRunning) {
+                stopTimer();
+                console.log("Session paused: Tab hidden");
+            }
+        });
+
+        window.addEventListener("blur", () => {
+            if (isRunning) {
+                stopTimer();
+                console.log("Session paused: Window lost focus");
+            }
+        });
+
+        // Hamburger Menu
+        const hamburger = document.getElementById('hamburger');
+        const mobileNav = document.getElementById('mobileNav');
+        hamburger.addEventListener('click', () => {
+            mobileNav.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

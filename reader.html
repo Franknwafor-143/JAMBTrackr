@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Study Session | JAMB Trackr</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="css/reader.css">
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    })();
+</script>
+</head>
+<script>
+    (function() {
+        const session = localStorage.getItem('currentUserEmail');
+        if (!session) {
+            // If no user is logged in, kick them back to auth.html immediately
+            window.location.replace('auth.html');
+        }
+    })();
+</script>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="subjects.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <div class="subject-info">
+                    <h2 id="current-subject">Loading Subject...</h2>
+                    <span class="status-badge"><span class="dot"></span> Active Session</span>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <div class="timer-display" id="main-timer">00:00:00</div>
+                <div class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+       <ul class="menu-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="dashboard.html" ><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="subjects.html"><i class="fas fa-book"></i> Subjects</a></li>
+            <li><a href="novel.html"><i class="fas fa-book"></i> Novel</a></li>
+            <li><a href="progress.html" ><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="reader.html" class="active"><i class="fas fa-file-pdf"></i> Reader</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="logout.html" style="color: #ff5252;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <main class="reader-container">
+        <div class="pdf-viewer-section">
+            <div class="viewer-header">
+                <div class="page-control">
+                    <button class="tool-btn" onclick="changePage(-1)"><i class="fas fa-minus"></i></button>
+                    <span>Page <input type="number" id="pageNumber" value="1" onchange="saveProgress()"> of <span id="totalPages">--</span></span>
+                    <button class="tool-btn" onclick="changePage(1)"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="save-indicator" id="saveNote">
+                    <i class="fas fa-check-circle"></i> Progress Saved
+                </div>
+            </div>
+
+            <div class="pdf-frame-wrapper">
+                <iframe src="" id="pdfViewer" width="100%" height="100%"></iframe>
+                
+                <div class="focus-overlay" id="focusOverlay" style="display: flex;">
+                    <div class="overlay-content">
+                        <i class="fas fa-pause-circle"></i>
+                        <h3>Study Paused</h3>
+                        <p>Timer is currently on hold. Resume to continue tracking.</p>
+                        <button class="btn-primary" onclick="toggleTimer()">Resume Study</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="control-panel">
+            <div class="session-stats">
+                <div class="stat-box">
+                    <small>Total Time Spent</small>
+                    <h4 id="stat-total-time">0.0h</h4>
+                </div>
+                <div class="stat-box">
+                    <small>Subject Progress</small>
+                    <h4 id="stat-accuracy">0%</h4>
+                </div>
+            </div>
+
+            <div class="timer-controls">
+                <button class="control-btn play-btn" id="playBtn" onclick="toggleTimer()">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="control-btn stop-btn" onclick="stopSession()">
+                    <i class="fas fa-stop"></i>
+                </button>
+            </div>
+
+            <div class="session-log">
+                <h3>Current Progress</h3>
+                <div class="log-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Total Studied: <strong id="total-time-val">0.0h</strong></span>
+                </div>
+                <div class="log-item">
+                    <i class="fas fa-fire"></i>
+                    <span>Subject Streak: <strong id="subject-streak">1 Day</strong></span>
+                </div>
+            </div>
+
+            <div class="safety-badge">
+                <i class="fas fa-shield-halved"></i> Safe & Secure Tracking
+            </div>
+        </aside>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // 1. URL and Data Configuration
+        const urlParams = new URLSearchParams(window.location.search);
+        const subjectKey = urlParams.get('sub') || 'english';
+        const email = localStorage.getItem('currentUserEmail') || 'guest';
+        const storageKey = `study_${email}_${subjectKey}`;
+
+        const pdfMap = {
+            'english': { title: 'Use of English', file: 'pdfs/english.pdf', pages: 50 },
+            'mathematics': { title: 'Mathematics', file: 'pdfs/maths.pdf', pages: 45 },
+            'physics': { title: 'Physics', file: 'pdfs/physics.pdf', pages: 40 },
+            'chemistry': { title: 'Chemistry', file: 'pdfs/chemistry.pdf', pages: 42 },
+            'biology': { title: 'Biology', file: 'pdfs/biology.pdf', pages: 38 },
+            'economics': { title: 'Economics', file: 'pdfs/economics.pdf', pages: 35 },
+            'government': { title: 'Government', file: 'pdfs/government.pdf', pages: 30 },
+            'literature': { title: 'Literature', file: 'pdfs/literature.pdf', pages: 32 }
+        };
+
+        // 2. State Management
+        let seconds = 0;
+        let timerId = null;
+        let isRunning = false;
+        const currentSubData = pdfMap[subjectKey];
+
+        // 3. Initialization
+        window.onload = () => {
+            document.getElementById('current-subject').innerText = currentSubData.title;
+            document.getElementById('pdfViewer').src = currentSubData.file;
+            document.getElementById('totalPages').innerText = currentSubData.pages;
+
+            // Load Saved Progress
+            const savedData = JSON.parse(localStorage.getItem(storageKey));
+            if (savedData) {
+                seconds = savedData.seconds || 0;
+                document.getElementById('pageNumber').value = savedData.lastPage || 1;
+                updateUI();
+                checkStreak(savedData.lastDate);
+            }
+        };
+
+        function toggleTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerId = setInterval(updateTimer, 1000);
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
+                document.getElementById('focusOverlay').style.display = 'none';
+            } else {
+                pauseTimer();
+            }
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerId);
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+            document.getElementById('focusOverlay').style.display = 'flex';
+            saveProgress();
+        }
+
+        function updateTimer() {
+            seconds++;
+            updateUI();
+            if (seconds % 15 === 0) saveProgress(); // Auto-save every 15s
+        }
+
+        function updateUI() {
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('main-timer').innerText = `${h}:${m}:${s}`;
+            
+            const hoursVal = (seconds / 3600).toFixed(1);
+            document.getElementById('stat-total-time').innerText = hoursVal + 'h';
+            document.getElementById('total-time-val').innerText = hoursVal + 'h';
+
+            // Calculate progress based on page number
+            const currentPage = parseInt(document.getElementById('pageNumber').value);
+            const progressPercent = Math.round((currentPage / currentSubData.pages) * 100);
+            document.getElementById('stat-accuracy').innerText = progressPercent + '%';
+        }
+
+        function saveProgress() {
+            const currentPage = parseInt(document.getElementById('pageNumber').value);
+            const progressPercent = Math.round((currentPage / currentSubData.pages) * 100);
+            const today = new Date().toDateString();
+            
+            const existingData = JSON.parse(localStorage.getItem(storageKey)) || { streak: 1 };
+            
+            const dataToSave = {
+                seconds: seconds,
+                progress: progressPercent,
+                lastPage: currentPage,
+                lastDate: today,
+                streak: existingData.streak || 1
+            };
+
+            localStorage.setItem(storageKey, JSON.stringify(dataToSave));
+            
+            const saveNote = document.getElementById('saveNote');
+            saveNote.style.opacity = '1';
+            setTimeout(() => { saveNote.style.opacity = '0.6'; }, 1000);
+        }
+
+        function checkStreak(lastDate) {
+            const today = new Date().toDateString();
+            let data = JSON.parse(localStorage.getItem(storageKey)) || { streak: 1 };
+            
+            if (lastDate && lastDate !== today) {
+                const lastD = new Date(lastDate);
+                const currentD = new Date(today);
+                const diff = (currentD - lastD) / (1000 * 60 * 60 * 24);
+                
+                if (diff === 1) {
+                    data.streak++;
+                } else if (diff > 1) {
+                    data.streak = 1;
+                }
+                localStorage.setItem(storageKey, JSON.stringify(data));
+            }
+            document.getElementById('subject-streak').innerText = `${data.streak || 1} Day(s)`;
+        }
+
+        function changePage(dir) {
+            let input = document.getElementById('pageNumber');
+            let val = parseInt(input.value) + dir;
+            if (val >= 1 && val <= currentSubData.pages) {
+                input.value = val;
+                saveProgress();
+                updateUI();
+            }
+        }
+
+        function stopSession() {
+            if(confirm("Exit session? Your progress is saved.")) {
+                saveProgress();
+                window.location.href = 'subjects.html';
+            }
+        }
+
+        // AUTO-PAUSE LOGIC
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && isRunning) pauseTimer();
+        });
+
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

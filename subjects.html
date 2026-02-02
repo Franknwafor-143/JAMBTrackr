@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Subject Selection | JAMB Trackr</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="css/subjects.css">
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    })();
+</script>
+</head>
+<script>
+    (function() {
+        const session = localStorage.getItem('currentUserEmail');
+        if (!session) {
+            // If no user is logged in, kick them back to auth.html immediately
+            window.location.replace('auth.html');
+        }
+    })();
+</script>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-bolt"></i> <span>JAMB<span>Trackr</span></span>
+            </div>
+            <div class="nav-right">
+                <div class="search-trigger"><i class="fas fa-search"></i></div>
+                <div class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="sidebar" id="sidebar">
+        <ul class="side-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="dashboard.html" ><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="subjects.html" class="active"><i class="fas fa-book"></i> Subjects</a></li>
+            <li><a href="novel.html"><i class="fas fa-book"></i> Novel</a></li>
+            <li><a href="progress.html" ><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li><a href="reader.html" ><i class="fas fa-file-pdf"></i> Reader</a></li>
+            <li><a href="settings.html" ><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="logout.html" style="color: #ff5252;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header" data-aos="fade-down">
+            <div class="header-info">
+                <h1>Select Subject</h1>
+                <p>Curated by JAMB exam specialists for 2026</p>
+            </div>
+            <div class="filter-pills">
+                <span class="pill active">All</span>
+            </div>
+        </header>
+
+        <div class="subjects-grid">
+            <div class="subject-card" data-aos="fade-up" id="card-english">
+                <div class="card-top"><div class="sub-icon eng"><i class="fas fa-language"></i></div></div>
+                <h3>Use of English</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=english'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="subject-card" data-aos="fade-up" id="card-mathematics">
+                <div class="card-top"><div class="sub-icon math"><i class="fas fa-calculator"></i></div></div>
+                <h3>Mathematics</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=mathematics'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="subject-card" data-aos="fade-up" id="card-physics">
+                <div class="card-top"><div class="sub-icon phy"><i class="fas fa-atom"></i></div></div>
+                <h3>Physics</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=physics'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="subject-card" data-aos="fade-up" id="card-chemistry">
+                <div class="card-top"><div class="sub-icon chem"><i class="fas fa-flask"></i></div></div>
+                <h3>Chemistry</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=chemistry'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="subject-card" data-aos="fade-up" id="card-biology">
+                <div class="card-top"><div class="sub-icon bio"><i class="fas fa-dna"></i></div></div>
+                <h3>Biology</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=biology'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="subject-card" data-aos="fade-up" id="card-economics">
+                <div class="card-top"><div class="sub-icon eco"><i class="fas fa-chart-line"></i></div></div>
+                <h3>Economics</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=economics'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="subject-card" data-aos="fade-up" id="card-government">
+                <div class="card-top"><div class="sub-icon gov"><i class="fas fa-landmark"></i></div></div>
+                <h3>Government</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=government'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="subject-card" data-aos="fade-up" id="card-literature">
+                <div class="card-top"><div class="sub-icon lit"><i class="fas fa-feather-alt"></i></div></div>
+                <h3>Literature</h3>
+                <div class="progress-info">
+                    <div class="bar-container"><div class="bar-fill" style="width: 0%;"></div></div>
+                    <div class="bar-meta"><span>0% Complete</span><span>0h spent</span></div>
+                </div>
+                <button class="btn-open" onclick="location.href='reader.html?sub=literature'">Open Past Questions <i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <footer class="trust-note">
+            <p><i class="fas fa-shield-alt"></i> All progress is tracked securely and updated in real-time.</p>
+        </footer>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        });
+
+        // PROGRESS SYNC LOGIC
+        function updateAllCards() {
+            const subjects = ['english', 'mathematics', 'physics', 'chemistry', 'biology', 'economics', 'government', 'literature'];
+            const email = localStorage.getItem('currentUserEmail') || 'guest';
+
+            subjects.forEach(sub => {
+                const data = JSON.parse(localStorage.getItem(`study_${email}_${sub}`)) || { seconds: 0, progress: 0 };
+                const card = document.getElementById(`card-${sub}`);
+                if (card) {
+                    const hours = (data.seconds / 3600).toFixed(1);
+                    card.querySelector('.bar-fill').style.width = data.progress + '%';
+                    card.querySelector('.bar-meta').innerHTML = `<span>${data.progress}% Complete</span><span>${hours}h spent</span>`;
+                }
+            });
+        }
+
+        window.onload = updateAllCards;
+    </script>
+</body>
+</html>
