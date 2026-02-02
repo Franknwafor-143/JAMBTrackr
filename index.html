@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAMB Trackr | Your Smarter Path to Success</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    })();
+</script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon"><i class="fas fa-graduation-cap"></i></span>
+                <span class="logo-text">JAMB<span>Trackr</span></span>
+            </div>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#subjects">Subjects</a></li>
+                <li><a href="auth.html"class="btn-primary">Get Started</a></li>
+            </ul>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content" data-aos="fade-up">
+                <div class="badge">Trusted by 10,000+ Aspirants</div>
+                <h1>Study Smarter. <br><span class="gradient-text">Achieve Higher.</span></h1>
+                <p>Access thousands of past questions, track study time in real-time, and crush your goals with the #1 JAMB preparation tool.</p>
+                <div class="hero-btns">
+                    <button class="btn-primary btn-lg">Start Studying Now <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <div class="trust-footer">
+                    <span><i class="fas fa-check-circle"></i> Ad-free Experience</span>
+                    <span><i class="fas fa-check-circle"></i> Verified Past Questions</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="stats-bar" data-aos="zoom-in">
+        <div class="stat-item">
+            <h3>20k+</h3>
+            <p>Questions</p>
+        </div>
+        <div class="stat-item">
+            <h3>24/7</h3>
+            <p>Tracking</p>
+        </div>
+        <div class="stat-item">
+            <h3>98%</h3>
+            <p>Success Rate</p>
+        </div>
+    </div>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why Choose JAMB Trackr?</h2>
+                <p>Powerful tools designed to keep you consistent.</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="f-icon blue"><i class="fas fa-book-open"></i></div>
+                    <h3>Past Questions</h3>
+                    <p>Thousands of JAMB questions organized by subject and year.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="f-icon green"><i class="fas fa-stopwatch"></i></div>
+                    <h3>Study Tracking</h3>
+                    <p>Monitor your sessions and get actionable performance insights.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="f-icon orange"><i class="fas fa-fire"></i></div>
+                    <h3>Daily Streaks</h3>
+                    <p>Build habits that stick. Don't break your preparation chain.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="subjects" class="subjects">
+        <div class="container">
+            <div class="section-title">
+                <h2>Explore Subjects</h2>
+            </div>
+            <div class="subject-grid">
+                <div class="subject-item"><span>Mathematics</span></div>
+                <div class="subject-item"><span>English</span></div>
+                <div class="subject-item"><span>Physics</span></div>
+                <div class="subject-item"><span>Chemistry</span></div>
+                <div class="subject-item"><span>Biology</span></div>
+                <div class="subject-item"><span>Economics</span></div>
+                <div class="subject-item"><span>Government</span></div>
+                <div class="subject-item"><span>Literature</span></div>
+            </div>
+        </div>
+    </section>
+
+    <a  href="auth.html" class="floating-cta" style="text-decoration: none;"><i class="fas fa-play"></i> <span>Start Study</span></a>
+
+    <footer>
+        <p>&copy; 2026 JAMB Trackr. All Rights Reserved. Built for Excellence.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
