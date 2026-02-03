@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Access | JAMB Trackr</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="blob"></div>
+        
+        <div class="auth-box" id="authBox" data-aos="zoom-in">
+            <div class="auth-header">
+                <div class="logo">
+                    <i class="fas fa-shield-check"></i>
+                    <span>JAMB<span>Trackr</span></span>
+                </div>
+                <h2 id="authTitle">Welcome Back</h2>
+                <p id="authSubtitle">Enter your credentials to access your vault.</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="name@example.com" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-lock"></i>
+                        <input type="password" id="loginPass" placeholder="••••••••" required>
+                        <i class="far fa-eye toggle-pass" onclick="togglePass('loginPass')"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Secure Login <i class="fas fa-arrow-right"></i></button>
+                <p class="switch-text">Don't have an account? <span onclick="toggleAuth()">Sign Up</span></p>
+            </form>
+
+            <form id="signupForm" class="auth-form hidden">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-user"></i>
+                        <input type="text" id="signName" placeholder="Frank Onyeka" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-envelope"></i>
+                        <input type="email" id="signEmail" placeholder="frank@example.com" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Create Password</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-lock"></i>
+                        <input type="password" id="signPass" oninput="checkStrength(this.value)" placeholder="••••••••" required>
+                    </div>
+                    <div class="strength-meter">
+                        <div id="strengthBar" class="bar"></div>
+                    </div>
+                    <small id="strengthText">Password Strength: <span>Weak</span></small>
+                </div>
+                <button type="submit" class="btn-primary">Create Account <i class="fas fa-user-plus"></i></button>
+                <p class="switch-text">Already a member? <span onclick="toggleAuth()">Log In</span></p>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            <p><i class="fas fa-lock"></i> AES-256 Local Encryption Active</p>
+            <p>© 2026 JAMB Trackr Personal Education Cloud</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800 });
+
+        function toggleAuth() {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const title = document.getElementById('authTitle');
+            const subtitle = document.getElementById('authSubtitle');
+            loginForm.classList.toggle('hidden');
+            signupForm.classList.toggle('hidden');
+            if (loginForm.classList.contains('hidden')) {
+                title.innerText = "Create Account";
+                subtitle.innerText = "Join thousands of students tracking their success.";
+            } else {
+                title.innerText = "Welcome Back";
+                subtitle.innerText = "Enter your credentials to access your vault.";
+            }
+        }
+
+        function togglePass(id) {
+            const el = document.getElementById(id);
+            el.type = el.type === 'password' ? 'text' : 'password';
+        }
+
+        function checkStrength(val) {
+            const bar = document.getElementById('strengthBar');
+            const text = document.querySelector('#strengthText span');
+            if (val.length > 8) {
+                bar.style.width = "100%"; bar.className = "bar strong"; text.innerText = "Strong";
+            } else if (val.length > 5) {
+                bar.style.width = "60%"; bar.className = "bar medium"; text.innerText = "Medium";
+            } else {
+                bar.style.width = "30%"; bar.className = "bar weak"; text.innerText = "Weak";
+            }
+        }
+
+        // SIGNUP LOGIC
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signEmail').value;
+            const fullName = document.getElementById('signName').value;
+            
+            // Create user object with 0 stats
+            const user = {
+                name: fullName,
+                email: email,
+                pass: btoa(document.getElementById('signPass').value),
+                stats: {
+                    dailyGoalPercent: 0,
+                    streak: 0,
+                    totalStudied: "0h",
+                    mathProgress: 0,
+                    englishProgress: 0,
+                    physicsProgress: 0
+                }
+            };
+            
+            localStorage.setItem(`user_${email}`, JSON.stringify(user));
+            // Auto-login after signup
+            localStorage.setItem('currentUserEmail', email);
+            alert("Account Created successfully!");
+            window.location.href = 'dashboard.html';
+        });
+
+        // LOGIN LOGIC
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = btoa(document.getElementById('loginPass').value);
+            const stored = JSON.parse(localStorage.getItem(`user_${email}`));
+
+            if (stored && stored.pass === pass) {
+                localStorage.setItem('currentUserEmail', email);
+                window.location.href = 'dashboard.html';
+            } else {
+                alert("Invalid Email or Password.");
+            }
+        });
+    </script>
+</body>
+</html>
